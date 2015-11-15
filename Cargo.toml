@@ -2,3 +2,7 @@
 name = "webrs"
 version = "0.1.0"
 authors = ["Aleksey Kuznetsov <zummenix@gmail.com>"]
+
+[dependencies]
+iron = "0.2.4"
+router = "0.0.15"
