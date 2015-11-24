@@ -1,2 +1,2 @@
 # rust-iron-postgres
-A web service example using rust, iron and postgres.
+This is my experiments writing a web service using rust, iron and postgres.
