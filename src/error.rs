@@ -4,35 +4,43 @@ use std::error;
 use iron::status::Status;
 use iron::IronError;
 
-#[derive(Debug)]
-struct Error {
-    pub status: Status,
-    pub payload: String,
+#[derive(Debug, PartialEq)]
+pub enum Error {
+    BadRequest(String),
 }
 
 impl Error {
-    fn new(status: Status, payload: String) -> Self {
-        Error {
-            status: status,
-            payload: payload,
+    fn status(&self) -> Status {
+        match *self {
+            Error::BadRequest(_) => Status::BadRequest,
         }
     }
 }
 
 impl error::Error for Error {
     fn description(&self) -> &str {
-        &self.payload
+        match *self {
+            Error::BadRequest(ref e) => e,
+        }
     }
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "Status: {}\nPayload:\n{}", self.status, self.payload)
+        match *self {
+            Error::BadRequest(ref e) => writeln!(f, "BadRequest: {}", e),
+        }
+    }
+}
+
+impl From<Error> for IronError {
+    fn from(error: Error) -> Self {
+        let details = format!("{{'details': '{}'}}", error::Error::description(&error));
+        let response = (error.status(), details);
+        IronError::new(error, response)
     }
 }
 
 pub fn bad_request<T>(details: T) -> IronError where T: Into<String> {
-    let details = format!("{{'details': '{}'}}", details.into());
-    let error = Error::new(Status::BadRequest, details.clone());
-    IronError::new(error, (Status::BadRequest, details))
+    Error::BadRequest(details.into()).into()
 }
