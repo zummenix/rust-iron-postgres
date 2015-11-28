@@ -8,6 +8,7 @@ use router::Router;
 
 mod v1;
 mod error;
+mod utils;
 
 fn main() {
     let mut router = Router::new();

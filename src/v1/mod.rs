@@ -1,14 +1,13 @@
 
-use iron::{Request, Response, IronResult};
 use iron::status;
-use iron::Plugin;
-use router::{Router};
+use iron::prelude::*;
+
 use urlencoded::UrlEncodedQuery;
 use error::*;
+use utils::*;
 
 pub fn get_user_handler(r: &mut Request) -> IronResult<Response> {
-    let id = r.extensions.get::<Router>().unwrap().find("id").unwrap_or("");
-    let id = try!(id.parse::<i32>().map_err(|_| bad_request("Could not parse id.")));
+    let id = try!(r.param("id").parse::<i32>().map_err(|_| bad_request("Could not parse id.")));
     Ok(Response::with((status::Ok, id.to_string())))
 }
 
