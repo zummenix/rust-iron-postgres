@@ -41,6 +41,8 @@ impl From<Error> for IronError {
     }
 }
 
-pub fn bad_request<T>(details: T) -> IronError where T: Into<String> {
+pub fn bad_request<T>(details: T) -> IronError
+    where T: Into<String>
+{
     Error::BadRequest(details.into()).into()
 }

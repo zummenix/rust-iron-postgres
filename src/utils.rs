@@ -21,7 +21,8 @@ impl<'a, 'b> IronRequestExt for Request<'a, 'b> {
     }
 
     fn query_param(&mut self, key: &str) -> &str {
-        self.get_ref::<UrlEncodedQuery>().ok()
+        self.get_ref::<UrlEncodedQuery>()
+            .ok()
             .and_then(|m| m.get(key).and_then(|v| v.first()))
             .map_or("", |s| s.as_ref())
     }
