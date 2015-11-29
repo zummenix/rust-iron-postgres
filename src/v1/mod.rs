@@ -2,7 +2,6 @@
 use iron::status;
 use iron::prelude::*;
 
-use urlencoded::UrlEncodedQuery;
 use error::*;
 use utils::*;
 
@@ -12,14 +11,5 @@ pub fn get_user_handler(r: &mut Request) -> IronResult<Response> {
 }
 
 pub fn get_users_handler(r: &mut Request) -> IronResult<Response> {
-    let search = if let Ok(ref hashmap) = r.get_ref::<UrlEncodedQuery>() {
-        hashmap.get("search").and_then(|v| v.first())
-    } else {
-        None
-    };
-    if let Some(s) = search {
-        Ok(Response::with((status::Ok, s.clone())))
-    } else {
-        Ok(Response::with(status::Ok))
-    }
+    Ok(Response::with((status::Ok, r.query("search"))))
 }
