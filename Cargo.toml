@@ -4,6 +4,6 @@ version = "0.1.0"
 authors = ["Aleksey Kuznetsov <zummenix@gmail.com>"]
 
 [dependencies]
-iron = "0.2.4"
-router = "0.0.15"
+iron = "0.2.5"
+router = "0.0.16"
 urlencoded  = "0.2.0"
