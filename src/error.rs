@@ -7,40 +7,47 @@ use json::builder::ObjectBuilder;
 use json;
 
 #[derive(Debug, PartialEq)]
-pub enum Error {
-    BadRequest(String),
+pub struct Error {
+    pub message: String,
+    pub status: Status,
 }
 
 impl Error {
-    fn status(&self) -> Status {
-        match *self {
-            Error::BadRequest(_) => Status::BadRequest,
+    pub fn new<T>(message: T, status: Status) -> Self
+        where T: Into<String>
+    {
+        Error {
+            message: message.into(),
+            status: status,
         }
+    }
+
+    pub fn json(&self) -> json::Value {
+        ObjectBuilder::new()
+            .insert_object("error", |builder| builder.insert("message", &self.message))
+            .unwrap()
+    }
+
+    pub fn json_string(&self) -> String {
+        json::to_string_pretty(&self.json()).unwrap()
     }
 }
 
 impl error::Error for Error {
     fn description(&self) -> &str {
-        match *self {
-            Error::BadRequest(ref e) => e,
-        }
+        &self.message
     }
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Error::BadRequest(ref e) => writeln!(f, "BadRequest: {}", e),
-        }
+        writeln!(f, "Error: {}", self.message)
     }
 }
 
 impl From<Error> for IronError {
     fn from(error: Error) -> Self {
-        let object = ObjectBuilder::new()
-            .insert("details", error::Error::description(&error))
-            .unwrap();
-        let response = (error.status(), json::to_string_pretty(&object).unwrap());
+        let response = (error.status, error.json_string());
         IronError::new(error, response)
     }
 }
@@ -48,5 +55,5 @@ impl From<Error> for IronError {
 pub fn bad_request<T>(details: T) -> IronError
     where T: Into<String>
 {
-    Error::BadRequest(details.into()).into()
+    Error::new(details, Status::BadRequest).into()
 }
