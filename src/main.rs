@@ -2,6 +2,7 @@
 extern crate iron;
 extern crate router;
 extern crate urlencoded;
+extern crate serde_json as json;
 
 use iron::Iron;
 use router::Router;

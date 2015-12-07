@@ -3,6 +3,8 @@ use std::fmt;
 use std::error;
 use iron::status::Status;
 use iron::IronError;
+use json::builder::ObjectBuilder;
+use json;
 
 #[derive(Debug, PartialEq)]
 pub enum Error {
@@ -35,8 +37,10 @@ impl fmt::Display for Error {
 
 impl From<Error> for IronError {
     fn from(error: Error) -> Self {
-        let details = format!("{{'details': '{}'}}", error::Error::description(&error));
-        let response = (error.status(), details);
+        let object = ObjectBuilder::new()
+            .insert("details", error::Error::description(&error))
+            .unwrap();
+        let response = (error.status(), json::to_string_pretty(&object).unwrap());
         IronError::new(error, response)
     }
 }

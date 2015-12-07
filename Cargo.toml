@@ -6,4 +6,5 @@ authors = ["Aleksey Kuznetsov <zummenix@gmail.com>"]
 [dependencies]
 iron = "0.2.5"
 router = "0.0.16"
-urlencoded  = "0.2.0"
+urlencoded = "0.2.0"
+serde_json = "0.6.0"
