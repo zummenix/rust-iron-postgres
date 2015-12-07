@@ -5,6 +5,10 @@ use iron::prelude::*;
 use error::*;
 use utils::*;
 
+pub use self::db_init::db_init;
+
+mod db_init;
+
 pub fn get_user_handler(request: &mut Request) -> IronResult<Response> {
     let id = try!(request.path_param("id")
                          .parse::<i32>()

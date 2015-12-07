@@ -10,23 +10,10 @@ extern crate r2d2;
 use iron::{Iron, Chain};
 use router::Router;
 use iron_postgres_middleware::PostgresMiddleware;
-use r2d2_postgres::PostgresConnectionManager;
-use r2d2::PooledConnection;
 
 mod v1;
 mod error;
 mod utils;
-
-fn init_db(db_conn: &PooledConnection<PostgresConnectionManager>) {
-    db_conn.execute(
-        "create table if not exists users (
-            id serial primary key,
-            first_name varchar not null,
-            last_name varchar not null
-        )",
-        &[]
-    ).unwrap();
-}
 
 fn main() {
     let mut router = Router::new();
@@ -39,7 +26,7 @@ fn main() {
         Ok(pg_middleware) => {
             {
                 let conn = pg_middleware.pool.get().unwrap();
-                init_db(&conn);
+                v1::db_init(&conn);
             }
             chain.link_before(pg_middleware);
         },
